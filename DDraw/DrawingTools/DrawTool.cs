@@ -16,6 +16,7 @@ namespace DDraw
         void DrawStep(Bitmap bmp, Point point);
         void EndDrawing(Point point);
         bool RequiresAdditionalSettings();
+        void Cleanup();
     }
 
    public  abstract class DrawTool : DrawingTool
@@ -79,32 +80,6 @@ namespace DDraw
             set { }
         }
 
-        protected int _roundedCorners;
-        public int RoundedCorners
-        {
-            get { return _roundedCorners; }
-            set
-            {
-                _roundedCorners = value;
-                OnPropertyChanged("RoundedCornersBitmap");
-            }
-        }
-        private Bitmap _roundedCornersBitmap;
-        public BitmapSource RoundedCornersBitmap
-        {
-            get
-            {
-                using (var g = Graphics.FromImage(_roundedCornersBitmap))
-                {
-                    g.Clear(Color.Transparent);
-                    g.DrawLine(new Pen(Color.Black, PenWidth), 0, 50, 100, 50);
-                    //g.DrawRoundedRectangle()
-                }
-                return Utils.loadBitmap(_roundedCornersBitmap);
-            }
-            set { }
-        }
-
         private Bitmap _penWidthBitmap;
         public BitmapSource PenWidthBitmap
         {
@@ -114,7 +89,6 @@ namespace DDraw
                 {
                     g.Clear(Color.Transparent);
                     g.DrawLine(new Pen(Color.Black, PenWidth), 0, 50, 100, 50);
-                    //g.DrawRoundedRectangle()
                 }
                 return Utils.loadBitmap(_penWidthBitmap);
             }
@@ -128,7 +102,6 @@ namespace DDraw
             this.fillColor = Color.White;
             this._strokeColorBitmap = new Bitmap(100, 100);
             this._fillColorBitmap = new Bitmap(100, 100);
-            this._roundedCornersBitmap = new Bitmap(100, 100);
             this._penWidthBitmap = new Bitmap(100, 100);
             brush = new SolidBrush(Color.Black);
             PenWidth = 2;
@@ -162,6 +135,15 @@ namespace DDraw
                 brush.Dispose();
                 brush = null;
             }
+        }
+
+        public void Cleanup()
+        {
+            pen?.Dispose();
+            brush?.Dispose();
+            currentGraphics?.Dispose();
+            _penWidthBitmap?.Dispose();
+            _fillColorBitmap?.Dispose();
         }
 
         public abstract bool RequiresAdditionalSettings();

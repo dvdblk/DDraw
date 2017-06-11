@@ -15,10 +15,8 @@ namespace DDraw
 
         override public void DrawShape(int x, int y, int width, int height)
         {
-            //currentGraphics.DrawRectangle(pen, new Rectangle(x, y, width, height));
-            //currentGraphics.FillRectangle(brush, new Rectangle(x, y, width, height));
-            pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
-            currentGraphics.DrawRoundedRectangle(pen, new Rectangle(x, y, width, height), 2);
+            currentGraphics.DrawRectangle(pen, new Rectangle(x, y, width, height));
+            currentGraphics.FillRectangle(brush, new Rectangle(x, y, width, height));
         }
 
         public override bool RequiresAdditionalSettings()

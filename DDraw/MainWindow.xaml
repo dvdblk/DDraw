@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DDraw"
         mc:Ignorable="d"
+        Closing="Cleanup"
         Title="DDraw" Height="600" Width="800">
     <Window.Resources>
         <BitmapImage x:Key="addLayerImage" UriSource="/Resources/layerAdd.png"/>
@@ -25,11 +26,11 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="New ..." x:Name="menuItemNew" Click="menuItemNew_Click" />
-                <MenuItem Header="_Open" />
-                <MenuItem x:Name="menuItemSave" Header="_Save" Click="menuItemSave_Click" />
-                <Separator />
-                <MenuItem Header="_Exit" />
+                <MenuItem Header="New ..." x:Name="menuItemNew" Click="menuItemNew_Click"/>
+                <MenuItem Header="_Open ..." x:Name="menuItemOpen" Click="menuItemOpen_Click"/>
+                <MenuItem Header="_Save ..." x:Name="menuItemSave" Click="menuItemSave_Click"/>
+                <Separator/>
+                <MenuItem Header="_Exit" x:Name="menuItemExit" Click="menuItemExit_Click"/>
             </MenuItem>
         </Menu>
         <StatusBar DockPanel.Dock="Bottom">
@@ -39,7 +40,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*" Name="col1"/>
                 <ColumnDefinition Width="5" />
-                <ColumnDefinition Width="*" MinWidth="125" MaxWidth="400"/>
+                <ColumnDefinition Width="*" MinWidth="185" MaxWidth="400"/>
             </Grid.ColumnDefinitions>
             <Grid Background="LightGray">
                 <Grid.ColumnDefinitions>
@@ -62,7 +63,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
                 <ScrollViewer Grid.Column="1" x:Name="mainImageScrollViewer" CanContentScroll="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <Image Width="0" Height="0" x:Name="mainImage" HorizontalAlignment="Center" VerticalAlignment="Center" MouseLeave="mainImage_MouseLeave" MouseWheel="mainImage_MouseWheel" MouseUp="mainImage_MouseUp"  MouseDown="mainImage_MouseDown" MouseMove="mainImage_MouseMove">
+                    <Image Width="0" Height="0" x:Name="mainImage" HorizontalAlignment="Center" VerticalAlignment="Center" MouseEnter="mainImage_MouseEnter" MouseLeave="mainImage_MouseLeave" MouseWheel="mainImage_MouseWheel" MouseUp="mainImage_MouseUp"  MouseDown="mainImage_MouseDown" MouseMove="mainImage_MouseMove">
                     </Image>
                 </ScrollViewer>
             </Grid>
@@ -94,8 +95,8 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Image Grid.Column="1" Source="{Binding PenWidthBitmap}"></Image>
-                        <TextBox Height="20" Grid.Column="3" Text="{Binding PenWidth}"></TextBox>
-                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="4" Text="px"></TextBlock>
+                        <TextBox Height="20" Grid.Column="3" Text="{Binding PenWidth, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBlock FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="4" Text="px"></TextBlock>
                     </Grid>
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
@@ -105,7 +106,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Text="Stroke color:"></TextBlock>
+                        <TextBlock FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Text="Stroke color:"></TextBlock>
                         <Button Grid.Column="3" x:Name="stokeColorBtn" Click="stokeColorBtn_Click" Style="{StaticResource DefaultButton}">
                             <Image Source="{Binding StrokeColorBitmap}"></Image>
                         </Button>
@@ -118,23 +119,11 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Text="Fill color:"></TextBlock>
+                        <TextBlock FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Text="Fill color:"></TextBlock>
                         <Button Grid.Column="3" x:Name="fillColorBtn" Click="fillColorBtn_Click" Style="{StaticResource DefaultButton}">
                             <Image Source="{Binding FillColorBitmap}"></Image>
                         </Button>
 
-                    </Grid>
-                    <Grid Grid.Row="3">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="40"/>
-                            <ColumnDefinition Width="10"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Image Grid.Column="1" Source="{Binding RoundedCornersBitmap}"></Image>
-                        <TextBox Height="20" Grid.Column="3" Text="{Binding RoundedCorners}"></TextBox>
-                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="4" Text="px"></TextBlock>
                     </Grid>
                 </Grid>
                 <Grid Grid.Row="2" Background="Gray">
@@ -211,7 +200,8 @@
                                         <Image Width="Auto" Height="Auto" Source="{Binding ImageBitmap}"/>
                                     </Border>
                                     <TextBlock Grid.Column="4" VerticalAlignment="Center" Text="{Binding Name}" FontWeight="Bold" />
-                                    <Button Grid.Column="6" x:Name="layerLockedBtn" Click="layerLockedBtn_Click" Style="{StaticResource DefaultButton}">
+                                    <Separator HorizontalAlignment="Right" Grid.Column="5"/>
+                                    <Button Grid.Column="6"  x:Name="layerLockedBtn" Click="layerLockedBtn_Click" Style="{StaticResource DefaultButton}">
                                         <Image>
                                             <Image.Style>
                                                 <Style TargetType="{x:Type Image}">

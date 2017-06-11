@@ -26,7 +26,6 @@ namespace DDraw
 
         override public void DrawStep(Bitmap bmp, Point point)
         {
-
             currentGraphics.DrawLine(pen, previousPoint, point);
             previousPoint = point;
         }
@@ -42,7 +41,7 @@ namespace DDraw
 
         override public bool RequiresAdditionalSettings()
         {
-            return false;
+            return true;
         }
     }
 }

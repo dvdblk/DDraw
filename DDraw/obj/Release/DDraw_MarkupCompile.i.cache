@@ -4,15 +4,15 @@
 winexe
 C#
 .cs
-F:\__School\PB069\DDraw\DDraw\obj\Debug\
+F:\__School\PB069\DDraw\DDraw\obj\Release\
 DDraw
 none
 false
-DEBUG;TRACE
+TRACE
 F:\__School\PB069\DDraw\DDraw\App.xaml
 2-1457983926
 
-23-294424573
+23596057942
 15767094614
 MainWindow.xaml;NewImageWindow.xaml;
 

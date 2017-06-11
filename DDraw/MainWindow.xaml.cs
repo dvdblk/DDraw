@@ -16,7 +16,6 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Collections.Specialized;
-using System.Windows;
 
 namespace DDraw
 {
@@ -63,13 +62,6 @@ namespace DDraw
             addLayerBtn.DataContext = this;
             ImageCreated = false;
             layersList.ItemsSource = layers;
-            layers.CollectionChanged += (sender, e) =>
-            {
-                if (e.Action == NotifyCollectionChangedAction.Add)
-                {
-                    //layersList.items;
-                }
-            };
             toolsList.ItemsSource = tools;
 
             tools.Add(new PointerTool("/Resources/pointerToolImage.png"));
@@ -122,7 +114,6 @@ namespace DDraw
             {
                 actualName = name;
             }
-            //layersList.Items.Insert(0, new Layer(actualName, (int)mainImage.Width, (int)mainImage.Height));
             layers.Insert(0, new Layer(actualName, (int)mainImage.Width, (int)mainImage.Height));
             layersList.SelectedItem = layers[0];
         }
@@ -246,10 +237,8 @@ namespace DDraw
                 dlg.DefaultExt = ".png";
                 dlg.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
 
-                // Show save file dialog box
                 Nullable<bool> result = dlg.ShowDialog();
 
-                // Process save file dialog box results
                 if (result == true)
                 {
                     string filename = dlg.FileName;
@@ -287,11 +276,9 @@ namespace DDraw
             lineWidthRow.Height = new GridLength(40);
             strokeColorRow.Height = new GridLength(40);
             fillColorRow.Height = new GridLength(40);
-            roundedCornersRow.Height = new GridLength(40);
             if (SelectedTool is BrushTool || SelectedTool is LineTool)
             {
                 fillColorRow.Height = new GridLength(0);
-                roundedCornersRow.Height = new GridLength(0);
             }
             else if (SelectedTool is EllipseTool)
             {
@@ -301,14 +288,12 @@ namespace DDraw
             {
                 lineWidthRow.Height = new GridLength(0);
                 strokeColorRow.Height = new GridLength(0);
-                roundedCornersRow.Height = new GridLength(0);
             }
             else if (!SelectedTool.RequiresAdditionalSettings())
             {
                 lineWidthRow.Height = new GridLength(0);
                 strokeColorRow.Height = new GridLength(0);
                 fillColorRow.Height = new GridLength(0);
-                roundedCornersRow.Height = new GridLength(0);
             }
         }
 
@@ -320,6 +305,7 @@ namespace DDraw
                 SelectedTool.EndDrawing(GetPoint(e));
                 Draw();
             }
+            this.Cursor = Cursors.Arrow;
         }
 
         private void layersListItemRemove_Click(object sender, RoutedEventArgs e)
@@ -346,6 +332,7 @@ namespace DDraw
                 layers[nextSelected] = layers[nextSelected - 1];
                 layers[nextSelected - 1] = tmp;
                 layersList.SelectedItem = layers[nextSelected - 1];
+                Draw();
             }
         }
 
@@ -358,6 +345,7 @@ namespace DDraw
                 layers[nextSelected] = layers[nextSelected + 1];
                 layers[nextSelected + 1] = tmp;
                 layersList.SelectedItem = layers[nextSelected + 1];
+                Draw();
             }
         }
 
@@ -369,6 +357,7 @@ namespace DDraw
                 layers.Remove(SelectedLayer);
                 layers.Insert(0, tmp);
                 layersList.SelectedItem = layers[0];
+                Draw();
             }
         }
 
@@ -380,6 +369,7 @@ namespace DDraw
                 layers.Remove(SelectedLayer);
                 layers.Insert(layers.Count, tmp);
                 layersList.SelectedItem = layers[layers.Count-1];
+                Draw();
             }
         }
 
@@ -388,6 +378,57 @@ namespace DDraw
             Button button = sender as Button;
             Layer layer = button.DataContext as Layer;
             layer.Locked = !layer.Locked;
+        }
+
+        private void menuItemOpen_Click(object sender, RoutedEventArgs e)
+        {
+            var openDialog = new System.Windows.Forms.OpenFileDialog();
+            if (openDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    CreateNewImage(500, 500);
+                    Bitmap bitmap = new Bitmap(openDialog.FileName);
+                    using (var g = Graphics.FromImage(SelectedLayer.Bitmap))
+                    {
+                        g.DrawImage(bitmap, 0, 0);
+                    }
+                    Draw();
+                }
+                catch (Exception)
+                {
+                    MessageBoxResult result = MessageBox.Show("Invalid file format.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+
+            }
+        }
+
+        private void Cleanup(object sender, CancelEventArgs e)
+        {
+            if (mainBitmap != null)
+            {
+                for (int i = 0; i < layers.Count; i++)
+                {
+                    layers[i].Bitmap.Dispose();
+                }
+                temporaryBitmap?.Dispose();
+                mainBitmap.Dispose();
+
+                for (int i = 0; i < tools.Count; i++)
+                {
+                    tools[i].Cleanup();
+                }
+            }
+        }
+
+        private void menuItemExit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void mainImage_MouseEnter(object sender, MouseEventArgs e)
+        {
+            this.Cursor = Cursors.Cross;
         }
     }
 }

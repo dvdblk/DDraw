@@ -1,0 +1,16 @@
+F:\__School\PB069\DDraw\DDraw\bin\Release\DDraw.exe.config
+F:\__School\PB069\DDraw\DDraw\bin\Release\DDraw.exe
+F:\__School\PB069\DDraw\DDraw\bin\Release\DDraw.pdb
+F:\__School\PB069\DDraw\DDraw\obj\Release\MainWindow.g.cs
+F:\__School\PB069\DDraw\DDraw\obj\Release\NewImageWindow.g.cs
+F:\__School\PB069\DDraw\DDraw\obj\Release\App.g.cs
+F:\__School\PB069\DDraw\DDraw\obj\Release\GeneratedInternalTypeHelper.g.cs
+F:\__School\PB069\DDraw\DDraw\obj\Release\DDraw_MarkupCompile.cache
+F:\__School\PB069\DDraw\DDraw\obj\Release\DDraw_MarkupCompile.lref
+F:\__School\PB069\DDraw\DDraw\obj\Release\MainWindow.baml
+F:\__School\PB069\DDraw\DDraw\obj\Release\NewImageWindow.baml
+F:\__School\PB069\DDraw\DDraw\obj\Release\DDraw.g.resources
+F:\__School\PB069\DDraw\DDraw\obj\Release\DDraw.Properties.Resources.resources
+F:\__School\PB069\DDraw\DDraw\obj\Release\DDraw.csproj.GenerateResource.Cache
+F:\__School\PB069\DDraw\DDraw\obj\Release\DDraw.exe
+F:\__School\PB069\DDraw\DDraw\obj\Release\DDraw.pdb

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDraw.DrawingTools
+namespace DDraw
 {
     class LineTool: ShapeTool
     {
@@ -12,9 +13,9 @@ namespace DDraw.DrawingTools
         {
         }
 
-        public override void DrawShape(int x, int y, int width, int height)
+        public override void DrawStep(Bitmap bmp, Point point)
         {
-            currentGraphics.DrawLine(new System.Drawing.Pen(brush), x, y, width, height);
+            currentGraphics.DrawLine(pen, initialPoint.X, initialPoint.Y, point.X, point.Y);
         }
 
         public override bool RequiresAdditionalSettings()

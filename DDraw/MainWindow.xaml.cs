@@ -15,8 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using DDraw.DrawingTools;
 using System.Collections.Specialized;
+using System.Windows;
 
 namespace DDraw
 {
@@ -31,6 +31,7 @@ namespace DDraw
         private Bitmap mainBitmap;
         private Bitmap temporaryBitmap;
         private Graphics mainBitmapGraphics;
+        private string imageName;
         private bool Drawing;
 
         private double _mainImageZoomValue = 1.0;
@@ -73,10 +74,10 @@ namespace DDraw
 
             tools.Add(new PointerTool("/Resources/pointerToolImage.png"));
             tools.Add(new BrushTool("/Resources/brushToolImage.png"));
-            tools.Add(new RectangleTool(""));
-            tools.Add(new EllipseTool(""));
-            tools.Add(new LineTool(""));
-            tools.Add(new PaintBucketTool(""));
+            tools.Add(new PaintBucketTool("/Resources/paintBucketToolImage.png"));
+            tools.Add(new LineTool("/Resources/lineToolImage.png"));
+            tools.Add(new RectangleTool("/Resources/rectangleToolImage.png"));
+            tools.Add(new EllipseTool("/Resources/ellipseToolImage.png"));
             toolsList.SelectedItem = tools[0];
         }
 
@@ -96,6 +97,7 @@ namespace DDraw
         {
             BitmapFromLayers();
             mainImage.Source = Utils.loadBitmap(mainBitmap);
+            SelectedLayer.BitmapChanged();
         }
 
 
@@ -151,12 +153,13 @@ namespace DDraw
 
         private void menuItemNew_Click(object sender, RoutedEventArgs e)
         {
-            /*var newImageWindow = new NewImageWindow();
+            var newImageWindow = new NewImageWindow();
             newImageWindow.ShowDialog();
             if (newImageWindow.DialogResult.HasValue && newImageWindow.DialogResult.Value)
-            {*/
-                CreateNewImage(400, 200);
-            //}
+            {
+                imageName = newImageWindow.ImageName;
+                CreateNewImage(newImageWindow.ImageWidth, newImageWindow.ImageHeight);
+            }
 
             
         }
@@ -194,7 +197,7 @@ namespace DDraw
             var point = GetPoint(e);
             mainImageCursorPosition.Text = "Pos: " + point.X.ToString() + ", " + point.Y + "px";
 
-            if (Drawing)
+            if (SelectedLayer != null && Drawing && !SelectedLayer.Locked)
             {
                 if (SelectedTool is SaveBitmapTool)
                 {
@@ -202,9 +205,8 @@ namespace DDraw
                     SelectedLayer.Bitmap = new Bitmap(temporaryBitmap);
                     SelectedTool.BeginDrawing(SelectedLayer.Bitmap, SelectedTool.initialPoint);
                 }
-                SelectedTool.DrawStep(point);
+                SelectedTool.DrawStep(SelectedLayer.Bitmap, point);
                 Draw();
-                SelectedLayer.BitmapChanged();
             }
 
         }
@@ -221,7 +223,10 @@ namespace DDraw
                 }
                 temporaryBitmap = new Bitmap(SelectedLayer.Bitmap);
             }
-            SelectedTool.BeginDrawing(SelectedLayer.Bitmap, GetPoint(e));
+            if (SelectedLayer != null)
+            {
+                SelectedTool.BeginDrawing(SelectedLayer.Bitmap, GetPoint(e));
+            }
         }
 
         private void mainImage_MouseUp(object sender, MouseButtonEventArgs e)
@@ -230,6 +235,159 @@ namespace DDraw
             Drawing = false;
             SelectedTool.EndDrawing(GetPoint(e));
             Draw();
+        }
+
+        private void menuItemSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (ImageCreated)
+            {
+                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+                dlg.FileName = imageName ?? "image";
+                dlg.DefaultExt = ".png";
+                dlg.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
+
+                // Show save file dialog box
+                Nullable<bool> result = dlg.ShowDialog();
+
+                // Process save file dialog box results
+                if (result == true)
+                {
+                    string filename = dlg.FileName;
+                    mainBitmap.Save(filename);
+                }
+            }
+            
+        }
+
+        private void stokeColorBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var colorDialog = new System.Windows.Forms.ColorDialog();
+
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                var wpfColor = System.Drawing.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+                SelectedTool.strokeColor = wpfColor;
+            }
+        }
+
+        private void fillColorBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var colorDialog = new System.Windows.Forms.ColorDialog();
+
+            if (colorDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                var wpfColor = System.Drawing.Color.FromArgb(colorDialog.Color.A, colorDialog.Color.R, colorDialog.Color.G, colorDialog.Color.B);
+                SelectedTool.fillColor = wpfColor;
+            }
+        }
+
+        private void toolsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            additionalSettingsGrid.DataContext = SelectedTool;
+            lineWidthRow.Height = new GridLength(40);
+            strokeColorRow.Height = new GridLength(40);
+            fillColorRow.Height = new GridLength(40);
+            roundedCornersRow.Height = new GridLength(40);
+            if (SelectedTool is BrushTool || SelectedTool is LineTool)
+            {
+                fillColorRow.Height = new GridLength(0);
+                roundedCornersRow.Height = new GridLength(0);
+            }
+            else if (SelectedTool is EllipseTool)
+            {
+                roundedCornersRow.Height = new GridLength(0);
+            }
+            else if (SelectedTool is PaintBucketTool) 
+            {
+                lineWidthRow.Height = new GridLength(0);
+                strokeColorRow.Height = new GridLength(0);
+                roundedCornersRow.Height = new GridLength(0);
+            }
+            else if (!SelectedTool.RequiresAdditionalSettings())
+            {
+                lineWidthRow.Height = new GridLength(0);
+                strokeColorRow.Height = new GridLength(0);
+                fillColorRow.Height = new GridLength(0);
+                roundedCornersRow.Height = new GridLength(0);
+            }
+        }
+
+        private void mainImage_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (Drawing)
+            {
+                Drawing = false;
+                SelectedTool.EndDrawing(GetPoint(e));
+                Draw();
+            }
+        }
+
+        private void layersListItemRemove_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedLayer != null && layers.Count != 1)
+            {
+                int nextSelected = layersList.SelectedIndex;
+                if (nextSelected == layers.Count - 1)
+                {
+                    nextSelected--;
+                }
+                layers.Remove(SelectedLayer);
+                layersList.SelectedItem = layers[nextSelected];
+                Draw();
+            }
+        }
+
+        private void layersListItemMoveUp_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedLayer != null && layers.Count != 1 && layersList.SelectedIndex != 0)
+            {
+                int nextSelected = layersList.SelectedIndex;
+                var tmp = layers[nextSelected];
+                layers[nextSelected] = layers[nextSelected - 1];
+                layers[nextSelected - 1] = tmp;
+                layersList.SelectedItem = layers[nextSelected - 1];
+            }
+        }
+
+        private void layersListItemMoveDown_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedLayer != null && layers.Count != 1 && layersList.SelectedIndex != layers.Count-1)
+            {
+                int nextSelected = layersList.SelectedIndex;
+                var tmp = layers[nextSelected];
+                layers[nextSelected] = layers[nextSelected + 1];
+                layers[nextSelected + 1] = tmp;
+                layersList.SelectedItem = layers[nextSelected + 1];
+            }
+        }
+
+        private void layersListItemMoveTop_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedLayer != null && layers.Count != 1)
+            {
+                var tmp = SelectedLayer;
+                layers.Remove(SelectedLayer);
+                layers.Insert(0, tmp);
+                layersList.SelectedItem = layers[0];
+            }
+        }
+
+        private void layersListItemMoveBottom_Click(object sender, RoutedEventArgs e)
+        {
+            if (SelectedLayer != null && layers.Count != 1)
+            {
+                var tmp = SelectedLayer;
+                layers.Remove(SelectedLayer);
+                layers.Insert(layers.Count, tmp);
+                layersList.SelectedItem = layers[layers.Count-1];
+            }
+        }
+
+        private void layerLockedBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            Layer layer = button.DataContext as Layer;
+            layer.Locked = !layer.Locked;
         }
     }
 }

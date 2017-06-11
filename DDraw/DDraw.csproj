@@ -38,6 +38,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -128,6 +129,24 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\pointerToolImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\paintBucketToolImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\rectangleToolImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\layerUnlocked.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\layerLocked.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\lineToolImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\ellipseToolImage.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

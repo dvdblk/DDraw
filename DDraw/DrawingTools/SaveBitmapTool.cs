@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDraw.DrawingTools
+namespace DDraw
 {
     abstract class SaveBitmapTool: DrawTool
     {
@@ -17,14 +17,14 @@ namespace DDraw.DrawingTools
 
         public override void BeginDrawing(Bitmap bmp, Point point)
         {
-            initialBitmap = new Bitmap(bmp);
+            //initialBitmap = new Bitmap(bmp);
             base.BeginDrawing(bmp, point);
         }
 
         public override void EndDrawing(Point point)
         {
-            initialBitmap.Dispose();
-            initialBitmap = null;
+            //initialBitmap.Dispose();
+            //initialBitmap = null;
             base.EndDrawing(point);
         }
     }

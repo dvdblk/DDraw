@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DDraw"
         mc:Ignorable="d"
-        Title="New Image" Height="300" Width="300">
+        Title="New Image" Height="250" Width="300">
     <Window.Resources>
         <ControlTemplate x:Key="validationErrorTemplate">
             <DockPanel>
@@ -22,16 +22,15 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="28*"/>
-            <RowDefinition Height="213*"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="120*"/>
             <RowDefinition Height="28*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="19*"/>
+            <ColumnDefinition Width="10*"/>
             <ColumnDefinition Width="108*"/>
-            <ColumnDefinition Width="19*"/>
+            <ColumnDefinition Width="10*"/>
         </Grid.ColumnDefinitions>
-        <Border Grid.Column="1" Grid.Row="1" BorderBrush="Gray" BorderThickness="1,1,1,1" Background="{x:Null}" />
         <Grid Grid.Column="1" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -40,22 +39,34 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="40"/>
+                <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" Text="Width: "></TextBlock>
+            <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" FontSize="15" Text="Name: "></TextBlock>
             <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="1" Text="Height: "></TextBlock>
-            <TextBox VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="0" Validation.ErrorTemplate="{StaticResource validationErrorTemplate}">
+            <TextBlock VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="2" Text="Width: "></TextBlock>
+            <Separator Grid.ColumnSpan="2" Grid.Row="1" VerticalAlignment="Top"></Separator>
+            <TextBox x:Name="nameTextBox" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="0" Validation.ErrorTemplate="{StaticResource validationErrorTemplate}">
                 <TextBox.Text>
-                    <Binding Path="ImageWidth" UpdateSourceTrigger="PropertyChanged">
+                    <Binding Path="ImageName" UpdateSourceTrigger="PropertyChanged">
+                        <Binding.ValidationRules>
+                            <local:ImageNameValidator/>
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+            <TextBox x:Name="heightTextBox" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1" Validation.ErrorTemplate="{StaticResource validationErrorTemplate}">
+                <TextBox.Text>
+                    <Binding Path="ImageHeight" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
                             <local:ImageSizeValidator/>
                         </Binding.ValidationRules>
                     </Binding>
                 </TextBox.Text>
             </TextBox>
-            <TextBox VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="1">
+            <TextBox x:Name="widthTextBox" VerticalAlignment="Bottom" Grid.Column="1" Grid.Row="2" Validation.ErrorTemplate="{StaticResource validationErrorTemplate}">
                 <TextBox.Text>
-                    <Binding Path="ImageHeight" UpdateSourceTrigger="PropertyChanged">
+                    <Binding Path="ImageWidth" UpdateSourceTrigger="PropertyChanged">
                         <Binding.ValidationRules>
                             <local:ImageSizeValidator/>
                         </Binding.ValidationRules>
@@ -68,8 +79,8 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Name="OKButton" Content="OK" Height="23" HorizontalAlignment="Center"  VerticalAlignment="Center"  Width="75" IsDefault="True" Command="{Binding OKButtonCommand}" />
-            <Button Grid.Column="1" Name="CancelButton" Content="Cancel"  Height="23"  HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" IsCancel="True" />
+            <Button Grid.Column="0" Name="OKButton" Content="OK" Height="23" HorizontalAlignment="Center"  VerticalAlignment="Center"  Width="75" IsDefault="True" Command="{Binding OKButtonCommand}" Click="OKButton_Click" />
+            <Button Grid.Column="1" Name="CancelButton" Content="Cancel"  Height="23"  HorizontalAlignment="Center"  VerticalAlignment="Center" Width="75" IsCancel="True" Click="CancelButton_Click" />
         </Grid>
     </Grid>
 </Window>

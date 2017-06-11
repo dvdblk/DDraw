@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDraw.DrawingTools
+namespace DDraw
 {
     class PointerTool: DrawTool
     {
@@ -13,7 +13,7 @@ namespace DDraw.DrawingTools
         {
         }
 
-        override public void DrawStep(Point point)
+        override public void DrawStep(Bitmap bmp, Point point)
         {
 
         }

@@ -32,7 +32,14 @@ namespace DDraw
         }
         public string Name { get; set; }
         private bool _locked;
-        public bool Locked { get; set; }
+        public bool Locked {
+            get { return _locked; }
+            set
+            {
+                _locked = value;
+                OnPropertyChanged("Locked");
+            }
+        }
         private bool _visible;
         public bool Visible {
             get { return _visible; }

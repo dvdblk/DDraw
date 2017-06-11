@@ -5,19 +5,29 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DDraw"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="800">
+        Title="DDraw" Height="600" Width="800">
     <Window.Resources>
         <BitmapImage x:Key="addLayerImage" UriSource="/Resources/layerAdd.png"/>
         <BitmapImage x:Key="visibleLayerImage" UriSource="/Resources/layerVisible.png" />
         <BitmapImage x:Key="invisibleLayerImage" UriSource="/Resources/layerInvisible.png" />
         <BitmapImage x:Key="brushToolImage" UriSource="/Resources/brushToolImage.png" />
+        <BitmapImage x:Key="lockedLayerImage" UriSource="/Resources/layerLocked.png"/>
+        <BitmapImage x:Key="unlockedLayerImage" UriSource="/Resources/layerUnlocked.png"/>
+        <SolidColorBrush x:Key="WinGray">#F0F0F0</SolidColorBrush>
+        <SolidColorBrush x:Key="ListBox.Static.Background" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="ListBox.Static.Border" Color="#FFABADB3"/>
+        <SolidColorBrush x:Key="ListBox.Disabled.Background" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="ListBox.Disabled.Border" Color="#FFD9D9D9"/>
+        <Style TargetType="Button" x:Key="DefaultButton" >
+            <Setter Property="Background" Value="White"/>
+        </Style>
     </Window.Resources>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File" x:Name="menuItemNew" Click="menuItemNew_Click">
-                <MenuItem Header="New ..." />
+            <MenuItem Header="_File">
+                <MenuItem Header="New ..." x:Name="menuItemNew" Click="menuItemNew_Click" />
                 <MenuItem Header="_Open" />
-                <MenuItem Header="_Save" />
+                <MenuItem x:Name="menuItemSave" Header="_Save" Click="menuItemSave_Click" />
                 <Separator />
                 <MenuItem Header="_Exit" />
             </MenuItem>
@@ -31,16 +41,18 @@
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" MinWidth="125" MaxWidth="400"/>
             </Grid.ColumnDefinitions>
-            <Grid Background="Gray">
+            <Grid Background="LightGray">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <ListView x:Name="toolsList" Background="Red">
+                <ListView x:Name="toolsList" Background="Gray" SelectionChanged="toolsList_SelectionChanged">
+                    
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Height" Value="30" />
-                            <Setter Property="Background" Value="Gray"/>
+                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="VerticalContentAlignment" Value="Center"/>
                         </Style>
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
@@ -50,17 +62,82 @@
                     </ListView.ItemTemplate>
                 </ListView>
                 <ScrollViewer Grid.Column="1" x:Name="mainImageScrollViewer" CanContentScroll="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <Image Width="0" Height="0" x:Name="mainImage" HorizontalAlignment="Center" VerticalAlignment="Center" MouseWheel="mainImage_MouseWheel" MouseUp="mainImage_MouseUp"  MouseDown="mainImage_MouseDown" MouseMove="mainImage_MouseMove">
+                    <Image Width="0" Height="0" x:Name="mainImage" HorizontalAlignment="Center" VerticalAlignment="Center" MouseLeave="mainImage_MouseLeave" MouseWheel="mainImage_MouseWheel" MouseUp="mainImage_MouseUp"  MouseDown="mainImage_MouseDown" MouseMove="mainImage_MouseMove">
                     </Image>
                 </ScrollViewer>
             </Grid>
             <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-            <Grid Grid.Column="2">
+            <Grid Grid.Column="2" Background="{DynamicResource WinGray}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="5"/>
                     <RowDefinition Height="2*"/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="5"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Row="0" x:Name="additionalSettingsGrid" Background="Gray">
+                    <Grid.RowDefinitions>
+                        <RowDefinition x:Name="lineWidthRow" Height="30"/>
+                        <RowDefinition x:Name="strokeColorRow" Height="30"/>
+                        <RowDefinition x:Name="fillColorRow" Height="30"/>
+                        <RowDefinition x:Name="roundedCornersRow" Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="1" Source="{Binding PenWidthBitmap}"></Image>
+                        <TextBox Height="20" Grid.Column="3" Text="{Binding PenWidth}"></TextBox>
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="4" Text="px"></TextBlock>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Text="Stroke color:"></TextBlock>
+                        <Button Grid.Column="3" x:Name="stokeColorBtn" Click="stokeColorBtn_Click" Style="{StaticResource DefaultButton}">
+                            <Image Source="{Binding StrokeColorBitmap}"></Image>
+                        </Button>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Text="Fill color:"></TextBlock>
+                        <Button Grid.Column="3" x:Name="fillColorBtn" Click="fillColorBtn_Click" Style="{StaticResource DefaultButton}">
+                            <Image Source="{Binding FillColorBitmap}"></Image>
+                        </Button>
+
+                    </Grid>
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="40"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Grid.Column="1" Source="{Binding RoundedCornersBitmap}"></Image>
+                        <TextBox Height="20" Grid.Column="3" Text="{Binding RoundedCorners}"></TextBox>
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="4" Text="px"></TextBlock>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="2" Background="Gray">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="63*"/>
                         <ColumnDefinition Width="134*"/>
@@ -77,12 +154,25 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="30"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" x:Name="addLayerBtn" Click="addLayerBtn_Click" IsEnabled="{Binding ImageCreated}">
+                        <Button Grid.Column="0" x:Name="addLayerBtn" Click="addLayerBtn_Click" IsEnabled="{Binding ImageCreated}" Style="{StaticResource DefaultButton}">
                             <Image Source="{StaticResource addLayerImage}"></Image>
                         </Button>
                         <Separator Grid.Column="1"/>
                     </Grid>
-                    <ListView Grid.Row="1" x:Name="layersList" Background="Yellow" Grid.ColumnSpan="2">
+                    <ListView Grid.Row="1" x:Name="layersList" Background="Gray" Grid.ColumnSpan="2">
+                        <ListView.ContextMenu >
+                            <ContextMenu>
+                                <MenuItem Header="Move">
+                                    <MenuItem Header="Move 1 up" x:Name="layersListItemMoveUp" Click="layersListItemMoveUp_Click"/>
+                                    <MenuItem Header="Move 1 down" x:Name="layersListItemMoveDown" Click="layersListItemMoveDown_Click"/>
+                                    <Separator/>
+                                    <MenuItem Header="Move to top" x:Name="layersListItemMoveTop" Click="layersListItemMoveTop_Click"/>
+                                    <MenuItem Header="Move to bottom" x:Name="layersListItemMoveBottom" Click="layersListItemMoveBottom_Click"/>
+                                </MenuItem>
+                                <Separator/>
+                                <MenuItem Header="Delete selected layer" x:Name="layersListItemRemove" Click="layersListItemRemove_Click"/>
+                            </ContextMenu>
+                        </ListView.ContextMenu>
                         <ListView.ItemContainerStyle>
                             <Style TargetType="ListViewItem">
                                 <Setter Property="Height" Value="50" />
@@ -98,8 +188,10 @@
                                         <ColumnDefinition Width="30"/>
                                         <ColumnDefinition Width="5"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="30"/>
                                     </Grid.ColumnDefinitions>
-                                    <Button Grid.Column="0" x:Name="layerVisibleBtn" Click="layerVisibleBtn_Click">
+                                    <Button Grid.Column="0" x:Name="layerVisibleBtn" Click="layerVisibleBtn_Click" Style="{StaticResource DefaultButton}">
                                         <Image>
                                             <Image.Style>
                                                 <Style TargetType="{x:Type Image}">
@@ -118,7 +210,23 @@
                                     <Border Grid.Column="2" BorderThickness="1" BorderBrush="Black">
                                         <Image Width="Auto" Height="Auto" Source="{Binding ImageBitmap}"/>
                                     </Border>
-                                    <TextBlock Grid.Column="4"  Text="{Binding Name}" FontWeight="Bold" />
+                                    <TextBlock Grid.Column="4" VerticalAlignment="Center" Text="{Binding Name}" FontWeight="Bold" />
+                                    <Button Grid.Column="6" x:Name="layerLockedBtn" Click="layerLockedBtn_Click" Style="{StaticResource DefaultButton}">
+                                        <Image>
+                                            <Image.Style>
+                                                <Style TargetType="{x:Type Image}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Locked}" Value="False">
+                                                            <Setter Property="Source" Value="{StaticResource unlockedLayerImage}"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Locked}" Value="True">
+                                                            <Setter Property="Source" Value="{StaticResource lockedLayerImage}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
+                                    </Button>
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>

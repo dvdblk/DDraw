@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDraw.DrawingTools
+namespace DDraw
 {
     class PaintBucketTool: SaveBitmapTool
     {
@@ -14,9 +14,9 @@ namespace DDraw.DrawingTools
         {
         }
 
-        public override void DrawStep(Point point)
+        public override void DrawStep(Bitmap bmp, Point point)
         {
-            Utils.FloodFill(initialBitmap, point, Color.White, Color.Aqua);
+            Utils.FloodFill(bmp, point, Color.White, fillColor);
         }
 
         public override bool RequiresAdditionalSettings()

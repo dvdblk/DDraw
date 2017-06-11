@@ -32,4 +32,21 @@ namespace DDraw
             return ValidationResult.ValidResult;
         }
     }
+
+    class ImageNameValidator : ValidationRule
+    {
+        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        {
+            if (value == null)
+                return new ValidationResult(false, "Image size cannot be empty.");
+            else
+            {
+                if (value.ToString().Length >= 255 || value.ToString().Length < 3)
+                {
+                    return new ValidationResult(false, "Name must be 3-255 characters long.");
+                } 
+            }
+            return ValidationResult.ValidResult;
+        }
+    }
 }

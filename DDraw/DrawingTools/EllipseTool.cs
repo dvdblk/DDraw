@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDraw.DrawingTools
+namespace DDraw
 {
     class EllipseTool: ShapeTool
     {
@@ -15,7 +15,7 @@ namespace DDraw.DrawingTools
 
         public override void DrawShape(int x, int y, int width, int height)
         {
-            currentGraphics.DrawEllipse(new Pen(brush), new Rectangle(x, y, width, height));
+            currentGraphics.DrawEllipse(pen, new Rectangle(x, y, width, height));
             currentGraphics.FillEllipse(brush, new Rectangle(x, y, width, height));
         }
 

@@ -20,13 +20,34 @@ namespace DDraw
     public partial class NewImageWindow : Window
     {
 
-        public int ImageWidth;
-        public int ImageHeight;
+        public string ImageName { get; set; }
+        public int ImageWidth { get; set; }
+        public int ImageHeight { get; set; }
 
         public NewImageWindow()
         {
             InitializeComponent();
             this.DataContext = this;
+            ImageName = "New Image";
+            ImageWidth = 400;
+            ImageHeight = 400;
+        }
+
+        private void OKButton_Click(object sender, RoutedEventArgs e)
+        {
+            var result = Validation.GetErrors(widthTextBox);
+            if (Validation.GetErrors(widthTextBox).Count == 0 && Validation.GetErrors(heightTextBox).Count == 0 && Validation.GetErrors(nameTextBox).Count == 0) {
+                ImageWidth = int.Parse(widthTextBox.Text);
+                ImageHeight = int.Parse(heightTextBox.Text);
+                ImageName = nameTextBox.Text;
+                DialogResult = true;
+            }
+            
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
         }
     }
 }

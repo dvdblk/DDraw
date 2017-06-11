@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDraw.DrawingTools
+namespace DDraw
 {
     abstract class ShapeTool: SaveBitmapTool
     {
@@ -14,7 +14,7 @@ namespace DDraw.DrawingTools
         {
         }
 
-        public override void DrawStep(Point point)
+        public override void DrawStep(Bitmap bmp, Point point)
         {
             var w = Math.Abs(initialPoint.X - point.X);
             var h = Math.Abs(initialPoint.Y - point.Y);

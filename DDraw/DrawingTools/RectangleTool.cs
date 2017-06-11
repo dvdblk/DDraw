@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDraw.DrawingTools
+namespace DDraw
 {
     class RectangleTool: ShapeTool
     {
@@ -15,12 +15,15 @@ namespace DDraw.DrawingTools
 
         override public void DrawShape(int x, int y, int width, int height)
         {
-            currentGraphics.DrawRectangle(new Pen(brush), new Rectangle(x, y, width, height));
+            //currentGraphics.DrawRectangle(pen, new Rectangle(x, y, width, height));
+            //currentGraphics.FillRectangle(brush, new Rectangle(x, y, width, height));
+            pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+            currentGraphics.DrawRoundedRectangle(pen, new Rectangle(x, y, width, height), 2);
         }
 
         public override bool RequiresAdditionalSettings()
         {
-            return false;
+            return true;
         }
     }
 }

@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DDraw.DrawingTools
+namespace DDraw
 {
-    class BrushTool : DrawTool
+    public class BrushTool : DrawTool
     {
 
         private Point previousPoint;
@@ -21,11 +21,13 @@ namespace DDraw.DrawingTools
         {
             previousPoint = point;
             base.BeginDrawing(bmp, point);
+            pen.EndCap = LineCap.Round;
         }
 
-        override public void DrawStep(Point point)
+        override public void DrawStep(Bitmap bmp, Point point)
         {
-            currentGraphics.DrawLine(new Pen(brush), previousPoint, point);
+
+            currentGraphics.DrawLine(pen, previousPoint, point);
             previousPoint = point;
         }
 
@@ -34,7 +36,6 @@ namespace DDraw.DrawingTools
             if (point == previousPoint)
             {
                 currentGraphics.FillRectangle(brush, point.X, point.Y, 1, 1);
-                //currentGraphics.DrawEllipse(new Pen(brush), previousPoint.X - brushWidth / 2, previousPoint.Y-brushWidth/2, brushWidth, brushWidth);
             }
             base.EndDrawing(point);
         }

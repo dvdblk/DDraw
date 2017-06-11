@@ -1,0 +1,131 @@
+﻿<Window x:Class="DDraw.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DDraw"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="600" Width="800">
+    <Window.Resources>
+        <BitmapImage x:Key="addLayerImage" UriSource="/Resources/layerAdd.png"/>
+        <BitmapImage x:Key="visibleLayerImage" UriSource="/Resources/layerVisible.png" />
+        <BitmapImage x:Key="invisibleLayerImage" UriSource="/Resources/layerInvisible.png" />
+        <BitmapImage x:Key="brushToolImage" UriSource="/Resources/brushToolImage.png" />
+    </Window.Resources>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File" x:Name="menuItemNew" Click="menuItemNew_Click">
+                <MenuItem Header="New ..." />
+                <MenuItem Header="_Open" />
+                <MenuItem Header="_Save" />
+                <Separator />
+                <MenuItem Header="_Exit" />
+            </MenuItem>
+        </Menu>
+        <StatusBar DockPanel.Dock="Bottom">
+            <TextBlock x:Name="mainImageCursorPosition"></TextBlock>
+        </StatusBar>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*" Name="col1"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="*" MinWidth="125" MaxWidth="400"/>
+            </Grid.ColumnDefinitions>
+            <Grid Background="Gray">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ListView x:Name="toolsList" Background="Red">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Height" Value="30" />
+                            <Setter Property="Background" Value="Gray"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Image Source="{Binding ToolImageName}"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <ScrollViewer Grid.Column="1" x:Name="mainImageScrollViewer" CanContentScroll="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <Image Width="0" Height="0" x:Name="mainImage" HorizontalAlignment="Center" VerticalAlignment="Center" MouseWheel="mainImage_MouseWheel" MouseUp="mainImage_MouseUp"  MouseDown="mainImage_MouseDown" MouseMove="mainImage_MouseMove">
+                    </Image>
+                </ScrollViewer>
+            </Grid>
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="63*"/>
+                        <ColumnDefinition Width="134*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.ColumnSpan="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="30"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="30"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" x:Name="addLayerBtn" Click="addLayerBtn_Click" IsEnabled="{Binding ImageCreated}">
+                            <Image Source="{StaticResource addLayerImage}"></Image>
+                        </Button>
+                        <Separator Grid.Column="1"/>
+                    </Grid>
+                    <ListView Grid.Row="1" x:Name="layersList" Background="Yellow" Grid.ColumnSpan="2">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Height" Value="50" />
+                                <Setter Property="Background" Value="Gray"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="30"/>
+                                        <ColumnDefinition Width="5"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Button Grid.Column="0" x:Name="layerVisibleBtn" Click="layerVisibleBtn_Click">
+                                        <Image>
+                                            <Image.Style>
+                                                <Style TargetType="{x:Type Image}">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Visible}" Value="False">
+                                                            <Setter Property="Source" Value="{StaticResource invisibleLayerImage}"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Visible}" Value="True">
+                                                            <Setter Property="Source" Value="{StaticResource visibleLayerImage}"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
+                                    </Button>
+                                    <Border Grid.Column="2" BorderThickness="1" BorderBrush="Black">
+                                        <Image Width="Auto" Height="Auto" Source="{Binding ImageBitmap}"/>
+                                    </Border>
+                                    <TextBlock Grid.Column="4"  Text="{Binding Name}" FontWeight="Bold" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
